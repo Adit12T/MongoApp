@@ -6,9 +6,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document
 public class User {
 	@Id
-	String id;
-	String name;
-	int age;
+	private String name;
+	private int age;
 	
 	public User(String name, int age) {
 		super();
