@@ -5,14 +5,13 @@ import io.github.adit12t.mongoapp.user.UserProfileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.mongodb.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.core.publisher.Flux;
@@ -23,7 +22,6 @@ import java.time.Duration;
 @SpringBootTest(properties = {
         "app.security.user-password=user-password-for-tests",
         "app.security.admin-password=admin-password-for-tests"})
-@AutoConfigureWebTestClient
 @Testcontainers
 class MongoAppIntegrationTests {
 
@@ -31,8 +29,13 @@ class MongoAppIntegrationTests {
     @ServiceConnection
     static MongoDBContainer mongo = new MongoDBContainer("mongo:7.0");
 
-    @Autowired
     private WebTestClient client;
+
+    @Autowired
+    void bindClient(org.springframework.context.ApplicationContext context) {
+        client = WebTestClient.bindToApplicationContext(context).configureClient()
+                .responseTimeout(java.time.Duration.ofSeconds(15)).build();
+    }
 
     @Autowired
     private UserProfileRepository repository;
