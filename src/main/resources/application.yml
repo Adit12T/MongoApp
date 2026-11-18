@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: mongo-app
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/mongo_app}
+      auto-index-creation: true
+
+app:
+  security:
+    user-password: ${APP_USER_PASSWORD:}
+    admin-password: ${APP_ADMIN_PASSWORD:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

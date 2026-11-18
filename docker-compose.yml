@@ -1,0 +1,25 @@
+services:
+  mongo:
+    image: mongo:7.0
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      retries: 5
+
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/mongo_app
+      # Demo values for local use only. Set your own outside your machine.
+      APP_USER_PASSWORD: change-me-user-password
+      APP_ADMIN_PASSWORD: change-me-admin-password
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+volumes:
+  mongo-data:
