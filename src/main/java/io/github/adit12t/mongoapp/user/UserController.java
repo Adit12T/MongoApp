@@ -100,6 +100,8 @@ public class UserController {
                 .map(event -> ServerSentEvent.builder(event).event("user").build());
         Flux<ServerSentEvent<UserEvent>> heartbeat = Flux.interval(Duration.ofSeconds(15))
                 .map(tick -> ServerSentEvent.<UserEvent>builder().comment("keep-alive").build());
-        return Flux.merge(changes, heartbeat);
+        // Send a comment straight away so the response starts and clients know they are connected.
+        return Flux.merge(changes, heartbeat)
+                .startWith(ServerSentEvent.<UserEvent>builder().comment("connected").build());
     }
 }
